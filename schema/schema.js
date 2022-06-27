@@ -28,26 +28,49 @@ const hobbyData = [
     id: "1",
     title: "Hobby 1",
     description: "This is a hobby 1",
+    userId: "2",
   },
   {
     id: "2",
     title: "Hobby 2",
     description: "This is a hobby 2",
+    userId: "1",
   },
   {
     id: "3",
     title: "Hobby 3",
     description: "This is a hobby 3",
+    userId: "1",
   },
   {
     id: "4",
     title: "Hobby 4",
     description: "This is a hobby 4",
+    userId: "2",
   },
   {
     id: "5",
     title: "Hobby 5",
     description: "This is a hobby 5",
+    userId: "4",
+  },
+];
+
+const postData = [
+  {
+    id: "1",
+    comment: "Post 1",
+    userId: "1",
+  },
+  {
+    id: "2",
+    comment: "Post 2",
+    userId: "1",
+  },
+  {
+    id: "3",
+    comment: "Post 3",
+    userId: "2",
   },
 ];
 
@@ -60,7 +83,6 @@ const {
 } = graphql;
 
 // types
-
 const UserType = new GraphQLObjectType({
   name: "User",
   description: "Documentationf for User",
@@ -78,6 +100,12 @@ const HobbyType = new GraphQLObjectType({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return _.find(userData, { id: parent.userId });
+      },
+    },
   }),
 });
 
@@ -87,6 +115,12 @@ const PostType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     comment: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return _.find(userData, { id: parent.userId });
+      },
+    },
   }),
 });
 
@@ -107,6 +141,13 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       resolve(parent, args) {
         return _.find(hobbyData, { id: args.id });
+      },
+    },
+    post: {
+      type: PostType,
+      args: { id: { type: GraphQLID } },
+      resolve(parent, args) {
+        return _.find(postData, { id: args.id });
       },
     },
   },
